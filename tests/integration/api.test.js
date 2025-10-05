@@ -158,6 +158,8 @@ describe('Express Comic API Integration Tests', () => {
     });
 
     describe('GET /api/comics/search', () => {
+      jest.setTimeout(60000); // Increased for ~100 real API calls (~20s max)
+
       test('should require query parameter', async () => {
         const response = await request(app)
           .get('/api/comics/search')
@@ -179,10 +181,10 @@ describe('Express Comic API Integration Tests', () => {
         expect(response.body).toHaveProperty('pagination');
         
         if (response.body.results.length > 0) {
-          response.body.results.forEach(comic => {
-            expect(comic).toBeValidComicStructure();
-          });
-        }
+        response.body.results.forEach(comic => {
+          expect(comic).toBeValidComicStructure();
+        });
+      }
       });
 
       test('should handle pagination parameters correctly', async () => {

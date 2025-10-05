@@ -9,5 +9,5 @@ jobs:
       run: npm install -g pnpm
     - name: Run tests
       run: |
-        pnpm install
-        pnpm test
+        npm install
+        npm test

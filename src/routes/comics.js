@@ -24,38 +24,19 @@ router.get('/latest', async (req, res, next) => {
   }
 });
 
-// TODO: Implement GET /api/comics/:id
-router.get('/:id',
-  [
-    param('id')
-      .isInt({ min: 1 })
-      .withMessage('Comic ID must be a positive integer')
-  ],
-  validate,
-  async (req, res, next) => {
-    try {
-      // Get comic by ID using xkcdService.getById()
-      // Parse req.params.id to integer
-      // Pass any errors to next()
-      res.status(501).json({ error: 'Not implemented' });
-    } catch (error) {
-      next(error);
-    }
-  }
-);
-
-// TODO: Implement GET /api/comics/random
+// GET /api/comics/random
 router.get('/random', async (req, res, next) => {
   try {
     // Use xkcdService.getRandom() to get a random comic
-    // Handle any errors appropriately
-    res.status(501).json({ error: 'Not implemented' });
+    const comic = await xkcdService.getRandom();
+    res.json(comic);
   } catch (error) {
+    // Handle any errors appropriately
     next(error);
   }
 });
 
-// TODO: Implement GET /api/comics/search
+// GET /api/comics/search
 router.get('/search',
   [
     query('q')
@@ -76,10 +57,40 @@ router.get('/search',
     try {
       // Extract q, page, limit from req.query
       // Set defaults: page = 1, limit = 10
+      const q = req.query.q;
+      const page = parseInt(req.query.page || '1', 10);
+      const limit = parseInt(req.query.limit || '10', 10);
+      
       // Use xkcdService.search(q, page, limit)
+      const result = await xkcdService.search(q, page, limit);
+
       // Return the search results
-      res.status(501).json({ error: 'Not implemented' });
+      res.json(result);
     } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// GET /api/comics/:id
+router.get('/:id',
+  [
+    param('id')
+      .isInt({ min: 1 })
+      .withMessage('Comic ID must be a positive integer')
+  ],
+  validate,
+  async (req, res, next) => {
+    console.log('id', req.params.id);
+    try {
+      // Parse req.params.id to integer
+      const id = parseInt(req.params.id);
+
+      // Get comic by ID using xkcdService.getById()
+      const comic = await xkcdService.getById(id);
+      return res.json(comic);
+    } catch (error) {
+      // Pass any errors to next()
       next(error);
     }
   }
